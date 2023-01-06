@@ -152,7 +152,7 @@ Now we are ready to test our new API.
 
 Head over to the API tab in the SST Console and check out the new API.
 
-SST Console API tab
+<img src="https://imgur.com/7zaUCSm.png" alt="Homepage view 3" width=1000 height=500/>
 
 Here we can test our APIs.
 
@@ -161,23 +161,23 @@ Here we can test our APIs.
 {"content":"Hello World","attachment":"hello.jpg"}
 ```
 You should see the create note API request being made.
+<img src="https://imgur.com/ZsJJIga.png" alt="Homepage view 3" width=1000 height=500/>
 
-SST Console create note API request
 
 Here we are making a POST request to our create note API. We are passing in the content and attachment as a JSON string. In this case the attachment is a made up file name. We haven’t uploaded anything to S3 yet.
 
 If you head over to the DynamoDB tab, you’ll see the new note.
 
-SST Console new note
+<img src="https://imgur.com/UgwlwWH.png" alt="Homepage view 3" width=1000 height=500/>
 
-Make a note of the noteId. We are going to use this newly created note in the next chapter.
+Make a note of the `noteId`. We are going to use this newly created note in the next chapter.
 
-Refactor Our Code
+## Refactor Our Code
 Before we move on to the next chapter, let’s quickly refactor the code since we are going to be doing much of the same for all of our APIs.
 
- Start by replacing our create.js with the following.
-
-COPYimport * as uuid from "uuid";
+ Start by replacing our `create.js` with the following.
+```sh
+import * as uuid from "uuid";
 import handler from "../util/handler";
 import dynamoDb from "../util/dynamodb";
 
@@ -199,20 +199,22 @@ export const main = handler(async (event) => {
 
   return params.Item;
 });
+```
 This code doesn’t work just yet but it shows you what we want to accomplish:
 
 <li>We want to make our Lambda function async, and simply return the results.
 <li>We want to simplify how we make calls to DynamoDB. We don’t want to have to create a new AWS.DynamoDB.DocumentClient().
 <li>We want to centrally handle any errors in our Lambda functions.
 Finally, since all of our Lambda functions will be handling API endpoints, we want to handle our HTTP responses in one place.
-Let’s start by creating the dynamodb util.
+Let’s start by creating the `dynamodb` util.
 
- From the project root run the following to create a services/util directory.
-
+ From the project root run the following to create a `services/util` directory.
+```sh
 $ mkdir services/util
- Create a services/util/dynamodb.js file with:
-
-COPYimport AWS from "aws-sdk";
+```
+ Create a `services/util/dynamodb.js` file with:
+```sh
+import AWS from "aws-sdk";
 
 const client = new AWS.DynamoDB.DocumentClient();
 
@@ -223,10 +225,11 @@ export default {
   update: (params) => client.update(params).promise(),
   delete: (params) => client.delete(params).promise(),
 };
+```
 Here we are creating a convenience object that exposes the DynamoDB client methods that we are going to need in this guide.
 
- Also create a services/util/handler.js file with the following.
-
+ Also create a `services/util/handler.js` file with the following.
+```sh
 export default function handler(lambda) {
   return async function (event, context) {
     let body, statusCode;
@@ -248,6 +251,7 @@ export default function handler(lambda) {
     };
   };
 }
+```
 Let’s go over this in detail.
 
 <li>We are creating a handler function that we’ll use as a wrapper around our Lambda functions.
@@ -259,15 +263,18 @@ It’s important to note that the handler.js needs to be imported before we impo
 
 Next, we are going to add the API to get a note given its id.
 
-Common Issues
-Response statusCode: 500
+### Common Issues
 
-If you see a statusCode: 500 response when you invoke your function, the error has been reported by our code in the catch block. You’ll see a console.error is included in our util/handler.js code above. Incorporating logs like these can help give you insight on issues and how to resolve them.
+<li>Response statusCode: 500</li>
 
-COPY} catch (e) {
+If you see a `statusCode: 500` response when you invoke your function, the error has been reported by our code in the `catch` block. You’ll see a `console.error` is included in our `util/handler.js` code above. Incorporating logs like these can help give you insight on issues and how to resolve them.
+```sh
+} catch (e) {
   // Prints the full error
   console.error(e);
 
   body = { error: e.message };
   statusCode = 500;
 }
+
+```
