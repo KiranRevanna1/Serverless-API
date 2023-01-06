@@ -258,7 +258,7 @@ Let’s go over this in detail.
 <li>It takes our Lambda function as the argument.
 <li>We then run the Lambda function in a try/catch block.
 <li>On success, we JSON.stringify the result and return it with a 200 status code.
-<li>If there is an error then we return the error message with a 500 status code.
+<li>If there is an error then we return the error message with a 500 status code.</li><br/>
 It’s important to note that the handler.js needs to be imported before we import anything else. This is because we’ll be adding some error handling to it later that needs to be initialized when our Lambda function is first invoked.
 
 Next, we are going to add the API to get a note given its id.
