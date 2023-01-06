@@ -53,6 +53,7 @@ We are doing a couple of things of note here.
 
 <li>Finally, we are printing out the URL of our API as an output by calling `stack.addOutputs`. We are also exposing the API publicly so we can refer to it in other stacks.</li>
 </ul>
+
 ### Adding to the App
 Let’s add this new stack to the rest of our app.
 
